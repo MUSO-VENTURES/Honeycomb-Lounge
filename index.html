@@ -685,17 +685,20 @@
         });
 
         // Honeyed_Lounge plays as a quieter background layer under
-        // the main Sweet Like Honey track, looping independently
-        // for as long as the visitor stays on the page.
-        revealVideo.muted = false;
-        revealVideo.volume = 0.3;
-        revealVideo.currentTime = 0;
-        revealVideo.play().catch(() => {
-          // If unmuted autoplay is blocked here, fall back to a
-          // muted (visual-only) loop rather than nothing at all.
-          revealVideo.muted = true;
-          revealVideo.play().catch(() => {});
-        });
+        // the main Sweet Like Honey track, starting ~1s after it
+        // so the two don't hit at the exact same instant, and then
+        // looping independently for as long as the visitor stays.
+        setTimeout(() => {
+          revealVideo.muted = false;
+          revealVideo.volume = 0.3;
+          revealVideo.currentTime = 0;
+          revealVideo.play().catch(() => {
+            // If unmuted autoplay is blocked here, fall back to a
+            // muted (visual-only) loop rather than nothing at all.
+            revealVideo.muted = true;
+            revealVideo.play().catch(() => {});
+          });
+        }, 1000);
       })
       .catch(() => {
         status.textContent = "Something went wrong sending the agreement. Please try again, or use \u201cSave a PDF copy\u201d and email it directly.";
