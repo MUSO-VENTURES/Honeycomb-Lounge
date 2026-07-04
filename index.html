@@ -135,14 +135,20 @@
     letter-spacing:.16em;color:var(--gold);text-transform:uppercase;
     margin-bottom:14px;
   }
-  .sig-preview{
-    margin-top:6px;min-height:34px;
-    font-family:"Snell Roundhand","Brush Script MT","Segoe Script",cursive;
-    font-size:26px;color:var(--gold);
-    border-bottom:1px solid var(--gold-dim);
-    padding:0 4px 2px;
-  }
   .field{margin-bottom:16px}
+  .sig-input{
+    font-family:"Snell Roundhand","Brush Script MT","Segoe Script",cursive !important;
+    font-size:28px !important;
+    color:var(--gold) !important;
+    padding-top:4px !important;
+    padding-bottom:8px !important;
+  }
+  .sig-input::placeholder{
+    font-family:"Helvetica Neue",Helvetica,Arial,sans-serif;
+    font-size:13px;
+    color:var(--field-txt);
+    opacity:.55;
+  }
 
   .agree{
     display:flex;gap:12px;align-items:flex-start;
@@ -286,20 +292,24 @@
   }
   footer .gold{color:var(--gold-deep)}
 
-  /* print = clean record copy */
+  /* print = branded record copy, matching the on-screen design system.
+     Browsers strip background images/colors by default when printing
+     to save ink — these adjust properties force them to render, since
+     this is meant to become a PDF, not a physical printout. */
+  html, body, header, .panel, .reveal-video-overlay, main{
+    -webkit-print-color-adjust:exact;
+    print-color-adjust:exact;
+    color-adjust:exact;
+  }
   @media print{
-    body{background:#fff;color:#111;font-size:12px}
-    header{min-height:150px;border-bottom:2px solid #8A6414}
-    header .inner{padding:70px 0 20px}
-    header h1{color:#fff}
+    * {
+      -webkit-print-color-adjust:exact !important;
+      print-color-adjust:exact !important;
+      color-adjust:exact !important;
+    }
+    body{font-size:12px}
     .actions,.agree input,.status,.reveal,.no-print{display:none !important}
-    .panel{border:1px solid #999;background:#fff}
-    .clause p,.clause li,p.lede,.agree span{color:#111}
-    label{color:#6b4e10}
-    input{border:none;border-bottom:1px solid #888;background:#fff;color:#000}
-    .clause-head{color:#6b4e10;border-color:#bbb}
-    .sig-preview{color:#111;border-color:#888}
-    footer{color:#555}
+    a[href]::after{content:none !important}
   }
 </style>
 </head>
@@ -427,8 +437,7 @@
           <h3>Disclosing Party</h3>
           <div class="field">
             <label for="dp_signature">Signature</label>
-            <input type="text" id="dp_signature" name="Disclosing Party Signature" value="Shane Musseau" readonly>
-            <div class="sig-preview" id="dp_sig_preview" aria-hidden="true">&nbsp;</div>
+            <input type="text" id="dp_signature" class="sig-input" name="Disclosing Party Signature" value="Shane Musseau" readonly>
           </div>
           <div class="field">
             <label for="dp_printed">Company Name</label>
@@ -448,8 +457,7 @@
           <h3>Receiving Party</h3>
           <div class="field">
             <label for="rp_signature">Signature (type full name to sign)</label>
-            <input type="text" id="rp_signature" name="Receiving Party Signature" required>
-            <div class="sig-preview" id="rp_sig_preview" aria-hidden="true">&nbsp;</div>
+            <input type="text" id="rp_signature" class="sig-input" name="Receiving Party Signature" placeholder="Type your full name" required>
           </div>
           <div class="field">
             <label for="rp_printed">Printed Name</label>
@@ -543,18 +551,6 @@
 
   const form = document.getElementById("nda-form");
   form.action = "https://formsubmit.co/" + encodeURIComponent(OWNER_EMAIL);
-
-  // live script-style signature previews
-  function bindPreview(inputId, previewId){
-    const inp = document.getElementById(inputId);
-    const pre = document.getElementById(previewId);
-    pre.textContent = inp.value || "\u00a0";
-    inp.addEventListener("input", () => {
-      pre.textContent = inp.value || "\u00a0";
-    });
-  }
-  bindPreview("dp_signature", "dp_sig_preview");
-  bindPreview("rp_signature", "rp_sig_preview");
 
   // Disclosing Party date always reflects "today" whenever this
   // page is opened — readonly so a collaborator can't edit it.
