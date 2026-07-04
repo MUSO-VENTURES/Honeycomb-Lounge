@@ -590,16 +590,21 @@
     // Unlock audio playback while we're still inside the click's
     // gesture window. Browsers block .play()-with-sound once it's
     // called from an async callback (like after fetch resolves),
-    // but a muted play/pause cycle called synchronously here
-    // "arms" the element so the real playback later succeeds.
+    // but calling play()/pause() synchronously here "arms" the
+    // element so the real playback later succeeds. We do NOT wait
+    // on the play() promise before un-muting — doing that async
+    // created a race where the real playback (triggered once the
+    // fetch to FormSubmit resolves) could fire before this promise
+    // settled, leaving the audio muted or even getting paused by
+    // this callback moments after the real playback started.
     revealAudio.muted = true;
-    revealAudio.play()
-      .then(() => {
-        revealAudio.pause();
-        revealAudio.currentTime = 0;
-        revealAudio.muted = false;
-      })
-      .catch(() => { revealAudio.muted = false; });
+    const armAttempt = revealAudio.play();
+    if (armAttempt && typeof armAttempt.catch === "function"){
+      armAttempt.catch(() => {});
+    }
+    revealAudio.pause();
+    revealAudio.currentTime = 0;
+    revealAudio.muted = false;
     revealVideo.load();
 
     status.style.display = "none";
@@ -657,6 +662,7 @@
         requestAnimationFrame(() => reveal.classList.add("in"));
         reveal.scrollIntoView({ behavior: "smooth", block: "center" });
 
+        revealAudio.muted = false;
         revealAudio.volume = 0.55;
         revealAudio.currentTime = 0;
         revealAudio.play().catch(() => {
