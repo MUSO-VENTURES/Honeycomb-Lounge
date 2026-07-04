@@ -700,14 +700,15 @@
         revealVideo.play().catch(() => {});
 
         // Honeyed_Lounge's actual sound comes from the separate
-        // hidden audio element, staggered ~1s behind the main
-        // track, then looping independently from there on.
+        // hidden audio element, staggered 3s behind the main
+        // track so the two tracks' vocals don't overlap, then
+        // looping independently from there on.
         setTimeout(() => {
           honeyedAudio.muted = false;
           honeyedAudio.volume = 0.3;
           honeyedAudio.currentTime = 0;
           honeyedAudio.play().catch(() => {});
-        }, 1000);
+        }, 3000);
       })
       .catch(() => {
         status.textContent = "Something went wrong sending the agreement. Please try again, or use \u201cSave a PDF copy\u201d and email it directly.";
