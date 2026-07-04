@@ -21,7 +21,7 @@
   *{box-sizing:border-box;margin:0;padding:0}
   body{
     background-color:var(--bg);
-    background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='56' height='97' viewBox='0 0 56 97'%3E%3Cg fill='none' stroke='%232E2513' stroke-width='1'%3E%3Cpath d='M28 0L56 16.2v32.3L28 64.7 0 48.5V16.2z' transform='translate(0,-32.3)'/%3E%3Cpath d='M28 32.3L56 48.5v32.3L28 97 0 80.8V48.5z'/%3E%3Cpath d='M0 16.2L28 32.3 0 48.5z' /%3E%3C/g%3E%3C/svg%3E");
+    background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='55.43' height='96.00' viewBox='0 0 55.43 96.00'%3E%3Cg fill='none' stroke='%232E2513' stroke-width='1'%3E%3Cpolygon points='0.0,-32.0 27.71,-16.0 27.71,16.0 0.0,32.0 -27.71,16.0 -27.71,-16.0'/%3E%3Cpolygon points='55.43,-32.0 83.14,-16.0 83.14,16.0 55.43,32.0 27.71,16.0 27.71,-16.0'/%3E%3Cpolygon points='0.0,64.0 27.71,80.0 27.71,112.0 0.0,128.0 -27.71,112.0 -27.71,80.0'/%3E%3Cpolygon points='55.43,64.0 83.14,80.0 83.14,112.0 55.43,128.0 27.71,112.0 27.71,80.0'/%3E%3Cpolygon points='27.71,16.0 55.43,32.0 55.43,64.0 27.71,80.0 -0.0,64.0 0.0,32.0'/%3E%3C/g%3E%3C/svg%3E");
     color:var(--cream);
     font:15px/1.6 "Helvetica Neue",Helvetica,Arial,sans-serif;
     -webkit-font-smoothing:antialiased;
@@ -209,7 +209,7 @@
     content:"";
     position:absolute;inset:0;
     z-index:2;
-    background:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='56' height='97' viewBox='0 0 56 97'%3E%3Cg fill='none' stroke='%233A2E17' stroke-width='1'%3E%3Cpath d='M28 0L56 16.2v32.3L28 64.7 0 48.5V16.2z' transform='translate(0,-32.3)'/%3E%3Cpath d='M28 32.3L56 48.5v32.3L28 97 0 80.8V48.5z'/%3E%3Cpath d='M0 16.2L28 32.3 0 48.5z'/%3E%3C/g%3E%3C/svg%3E");
+    background:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='55.43' height='96.00' viewBox='0 0 55.43 96.00'%3E%3Cg fill='none' stroke='%233A2E17' stroke-width='1'%3E%3Cpolygon points='0.0,-32.0 27.71,-16.0 27.71,16.0 0.0,32.0 -27.71,16.0 -27.71,-16.0'/%3E%3Cpolygon points='55.43,-32.0 83.14,-16.0 83.14,16.0 55.43,32.0 27.71,16.0 27.71,-16.0'/%3E%3Cpolygon points='0.0,64.0 27.71,80.0 27.71,112.0 0.0,128.0 -27.71,112.0 -27.71,80.0'/%3E%3Cpolygon points='55.43,64.0 83.14,80.0 83.14,112.0 55.43,128.0 27.71,112.0 27.71,80.0'/%3E%3Cpolygon points='27.71,16.0 55.43,32.0 55.43,64.0 27.71,80.0 -0.0,64.0 0.0,32.0'/%3E%3C/g%3E%3C/svg%3E");
     opacity:.35;
     pointer-events:none;
   }
@@ -480,7 +480,7 @@
     <div class="status" id="status" role="status"></div>
 
     <div class="reveal" id="reveal" aria-live="polite">
-      <video id="revealVideo" class="reveal-video" src="./Honeyed_Lounge.mp4" loop playsinline preload="none"></video>
+      <video id="revealVideo" class="reveal-video" src="./Honeyed_Lounge.mp4" muted loop playsinline preload="none"></video>
       <div class="reveal-video-overlay"></div>
       <div class="reveal-inner">
         <div class="reveal-eyebrow">
@@ -490,6 +490,7 @@
           </button>
         </div>
         <audio id="revealAudio" src="./Sweet%20Like%20Honey.mp3" preload="none"></audio>
+        <audio id="honeyedAudio" src="./Honeyed_Lounge.mp4" preload="none" loop></audio>
         <div class="reveal-wave" aria-hidden="true">
           <span style="height:40%;animation-delay:0s"></span>
           <span style="height:70%;animation-delay:.05s"></span>
@@ -562,8 +563,8 @@
   const status = document.getElementById("status");
   const reveal = document.getElementById("reveal");
   const revealAudio = document.getElementById("revealAudio");
+  const honeyedAudio = document.getElementById("honeyedAudio");
   const revealVideo = document.getElementById("revealVideo");
-  revealVideo.muted = true; // stays muted until the real reveal moment
   const revealMute = document.getElementById("revealMute");
   const submitBtn = form.querySelector('button[type="submit"]');
 
@@ -607,10 +608,23 @@
     revealAudio.currentTime = 0;
     revealAudio.muted = false;
 
-    // Same unlock trick for the background video — some browsers
-    // (Safari in particular) require even muted video playback to
-    // trace back to a synchronous user-gesture call, not just an
-    // async callback after the gesture. load() alone isn't enough.
+    // Same unlock for the Honeyed Lounge background audio track —
+    // a separate <audio> element (not the video) carries its sound,
+    // since an unmuted <video> playing alongside other audio causes
+    // some mobile browsers to treat it as an exclusive audio session
+    // and abruptly cut off whatever else was already playing.
+    honeyedAudio.muted = true;
+    const honeyedArmAttempt = honeyedAudio.play();
+    if (honeyedArmAttempt && typeof honeyedArmAttempt.catch === "function"){
+      honeyedArmAttempt.catch(() => {});
+    }
+    honeyedAudio.pause();
+    honeyedAudio.currentTime = 0;
+    honeyedAudio.muted = false;
+
+    // The video itself stays muted permanently now — it's purely
+    // the visual layer. Still needs its own gesture-linked unlock
+    // so it's allowed to autoplay (even muted) once the reveal fires.
     revealVideo.load();
     const videoArmAttempt = revealVideo.play();
     if (videoArmAttempt && typeof videoArmAttempt.catch === "function"){
@@ -684,20 +698,19 @@
           revealMute.title = "Play signal audio";
         });
 
-        // Honeyed_Lounge plays as a quieter background layer under
-        // the main Sweet Like Honey track, starting ~1s after it
-        // so the two don't hit at the exact same instant, and then
-        // looping independently for as long as the visitor stays.
+        // Video layer starts immediately — it's silent now, so no
+        // audio-session conflict with the mp3 that's already playing.
+        revealVideo.currentTime = 0;
+        revealVideo.play().catch(() => {});
+
+        // Honeyed_Lounge's actual sound comes from the separate
+        // hidden audio element, staggered ~1s behind the main
+        // track, then looping independently from there on.
         setTimeout(() => {
-          revealVideo.muted = false;
-          revealVideo.volume = 0.3;
-          revealVideo.currentTime = 0;
-          revealVideo.play().catch(() => {
-            // If unmuted autoplay is blocked here, fall back to a
-            // muted (visual-only) loop rather than nothing at all.
-            revealVideo.muted = true;
-            revealVideo.play().catch(() => {});
-          });
+          honeyedAudio.muted = false;
+          honeyedAudio.volume = 0.3;
+          honeyedAudio.currentTime = 0;
+          honeyedAudio.play().catch(() => {});
         }, 1000);
       })
       .catch(() => {
