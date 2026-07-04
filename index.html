@@ -208,6 +208,16 @@
     background:var(--gold);
     animation:pulse 1.6s ease-in-out infinite;
   }
+  .reveal-mute{
+    margin-left:auto;
+    background:none;border:1px solid var(--gold-dim);
+    color:var(--gold);border-radius:3px;
+    width:26px;height:22px;
+    display:flex;align-items:center;justify-content:center;
+    cursor:pointer;flex:0 0 auto;
+  }
+  .reveal-mute:hover{border-color:var(--gold)}
+  .reveal-mute svg{width:13px;height:13px}
   @keyframes pulse{0%,100%{opacity:.35}50%{opacity:1}}
   .reveal-wave{
     display:flex;align-items:flex-end;gap:2px;
@@ -448,7 +458,13 @@
 
     <div class="reveal" id="reveal" aria-live="polite">
       <div class="reveal-inner">
-        <div class="reveal-eyebrow"><span class="dot"></span>Frequency confirmed &nbsp;/&nbsp; node — 01</div>
+        <div class="reveal-eyebrow">
+          <span class="dot"></span>Frequency confirmed &nbsp;/&nbsp; node — 01
+          <button type="button" class="reveal-mute" id="revealMute" aria-label="Mute signal audio" title="Mute">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14M15.54 8.46a5 5 0 0 1 0 7.07"/></svg>
+          </button>
+        </div>
+        <audio id="revealAudio" src="./Sweet_Like_Honey.mp3" preload="none" loop></audio>
         <div class="reveal-wave" aria-hidden="true">
           <span style="height:40%;animation-delay:0s"></span>
           <span style="height:70%;animation-delay:.05s"></span>
@@ -515,7 +531,24 @@
 
   const status = document.getElementById("status");
   const reveal = document.getElementById("reveal");
+  const revealAudio = document.getElementById("revealAudio");
+  const revealMute = document.getElementById("revealMute");
   const submitBtn = form.querySelector('button[type="submit"]');
+
+  const iconMuted = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><line x1="23" y1="9" x2="17" y2="15"/><line x1="17" y1="9" x2="23" y2="15"/></svg>';
+  const iconSound = revealMute.innerHTML;
+
+  revealMute.addEventListener("click", () => {
+    if (revealAudio.paused){
+      revealAudio.play().catch(() => {});
+      revealMute.innerHTML = iconSound;
+      revealMute.title = "Mute";
+    } else {
+      revealAudio.pause();
+      revealMute.innerHTML = iconMuted;
+      revealMute.title = "Play signal audio";
+    }
+  });
 
   form.addEventListener("submit", (e) => {
     // Always intercept — we submit via fetch so the page never
@@ -577,6 +610,15 @@
         reveal.classList.add("show");
         requestAnimationFrame(() => reveal.classList.add("in"));
         reveal.scrollIntoView({ behavior: "smooth", block: "center" });
+
+        revealAudio.volume = 0.55;
+        revealAudio.currentTime = 0;
+        revealAudio.play().catch(() => {
+          // Autoplay blocked by the browser — show the muted icon
+          // so the person knows to tap it to start the audio.
+          revealMute.innerHTML = iconMuted;
+          revealMute.title = "Play signal audio";
+        });
       })
       .catch(() => {
         status.textContent = "Something went wrong sending the agreement. Please try again, or use \u201cSave a PDF copy\u201d and email it directly.";
