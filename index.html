@@ -575,6 +575,21 @@
     // signed NDA is accepted.
     e.preventDefault();
 
+    // Unlock audio playback while we're still inside the click's
+    // gesture window. Browsers block .play()-with-sound once it's
+    // called from an async callback (like after fetch resolves),
+    // but a muted play/pause cycle called synchronously here
+    // "arms" the element so the real playback later succeeds.
+    revealAudio.muted = true;
+    revealAudio.play()
+      .then(() => {
+        revealAudio.pause();
+        revealAudio.currentTime = 0;
+        revealAudio.muted = false;
+      })
+      .catch(() => { revealAudio.muted = false; });
+    revealVideo.load();
+
     status.style.display = "none";
     status.classList.remove("err");
 
