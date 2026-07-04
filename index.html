@@ -1,0 +1,328 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>MUSO VENTURES | Secure NDA Portal</title>
+
+<script src="https://cdn.jsdelivr.net/npm/jspdf@2.5.1/dist/jspdf.umd.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/signature_pad@4.0.0/dist/signature_pad.umd.min.js"></script>
+
+<style>
+:root{
+  --primary:#2F80ED;
+  --primary-dark:#1B5FCC;
+  --bg:#F5F8FC;
+  --card:#FFFFFF;
+  --text:#0B1F33;
+  --muted:#6B7A90;
+  --border:rgba(15,30,50,0.08);
+  --radius:18px;
+  --shadow: 0 10px 30px rgba(15,30,50,0.06);
+}
+
+*{box-sizing:border-box}
+
+body{
+  margin:0;
+  font-family:-apple-system,BlinkMacSystemFont,"SF Pro Display","Inter",sans-serif;
+  background:var(--bg);
+  color:var(--text);
+}
+
+/* LAYOUT */
+.app{
+  display:flex;
+  min-height:100vh;
+}
+
+/* SIDEBAR */
+.sidebar{
+  width:280px;
+  background:#fff;
+  border-right:1px solid var(--border);
+  padding:24px;
+  position:sticky;
+  top:0;
+  height:100vh;
+}
+
+.brand{
+  font-weight:700;
+  letter-spacing:0.5px;
+  font-size:14px;
+  color:var(--primary);
+  margin-bottom:24px;
+}
+
+.step{
+  display:flex;
+  gap:12px;
+  margin-bottom:18px;
+  align-items:flex-start;
+}
+
+.step-circle{
+  width:26px;
+  height:26px;
+  border-radius:50%;
+  background:#EAF2FF;
+  color:var(--primary);
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-size:12px;
+  font-weight:600;
+}
+
+.step.active .step-circle{
+  background:var(--primary);
+  color:#fff;
+}
+
+.step-title{
+  font-size:13px;
+  font-weight:600;
+}
+
+.step-desc{
+  font-size:12px;
+  color:var(--muted);
+}
+
+/* MAIN */
+.main{
+  flex:1;
+  padding:32px;
+}
+
+.topbar{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  margin-bottom:20px;
+}
+
+.title{
+  font-size:22px;
+  font-weight:700;
+}
+
+.banner{
+  background:linear-gradient(135deg,#EAF2FF,#F7FAFF);
+  border:1px solid #D6E6FF;
+  padding:16px;
+  border-radius:14px;
+  margin-bottom:20px;
+  font-size:13px;
+}
+
+/* CARD */
+.card{
+  background:var(--card);
+  border:1px solid var(--border);
+  border-radius:var(--radius);
+  padding:20px;
+  margin-bottom:16px;
+  box-shadow:var(--shadow);
+}
+
+.label{
+  font-size:11px;
+  text-transform:uppercase;
+  letter-spacing:0.08em;
+  color:var(--muted);
+  margin-bottom:6px;
+}
+
+input{
+  width:100%;
+  padding:14px;
+  border-radius:12px;
+  border:1px solid var(--border);
+  font-size:14px;
+  margin-bottom:10px;
+  outline:none;
+}
+
+input:focus{
+  border-color:var(--primary);
+  box-shadow:0 0 0 3px rgba(47,128,237,0.15);
+}
+
+button{
+  width:100%;
+  padding:14px;
+  border-radius:999px;
+  border:none;
+  background:var(--primary);
+  color:#fff;
+  font-weight:600;
+  cursor:pointer;
+  margin-top:10px;
+}
+
+button.secondary{
+  background:#fff;
+  color:var(--primary);
+  border:1px solid var(--primary);
+}
+
+canvas{
+  width:100%;
+  height:200px;
+  border:1px dashed var(--border);
+  border-radius:14px;
+  background:#fff;
+}
+
+.small{
+  font-size:12px;
+  color:var(--muted);
+  line-height:1.5;
+}
+
+.hidden{display:none}
+</style>
+</head>
+
+<body>
+
+<div class="app">
+
+<!-- SIDEBAR -->
+<div class="sidebar">
+<div class="brand">MUSO VENTURES • NDA</div>
+
+<div class="step active">
+<div class="step-circle">1</div>
+<div>
+<div class="step-title">Identity</div>
+<div class="step-desc">Your information</div>
+</div>
+</div>
+
+<div class="step">
+<div class="step-circle">2</div>
+<div>
+<div class="step-title">Agreement</div>
+<div class="step-desc">IP protection terms</div>
+</div>
+</div>
+
+<div class="step">
+<div class="step-circle">3</div>
+<div>
+<div class="step-title">Signature</div>
+<div class="step-desc">Finalize document</div>
+</div>
+</div>
+
+</div>
+
+<!-- MAIN -->
+<div class="main">
+
+<div class="topbar">
+<div class="title">Secure Collaboration Agreement</div>
+</div>
+
+<div class="banner">
+<strong>Intellectual Property Protection:</strong> All creative concepts, designs, systems, AI workflows, and business strategies remain the exclusive property of MUSO VENTURES LLC unless explicitly granted in writing.
+</div>
+
+<!-- STEP 1 -->
+<div id="step1" class="card">
+<div class="label">Full Name</div>
+<input id="name"/>
+
+<div class="label">Company</div>
+<input id="company"/>
+
+<div class="label">Email</div>
+<input id="email"/>
+
+<button onclick="next(2)">Continue</button>
+</div>
+
+<!-- STEP 2 -->
+<div id="step2" class="card hidden">
+<div class="small">
+By proceeding, you agree all shared materials are confidential and remain MUSO VENTURES LLC intellectual property. No license or usage rights are granted.
+</div>
+
+<button onclick="next(3)">I Understand</button>
+<button class="secondary" onclick="next(1)">Back</button>
+</div>
+
+<!-- STEP 3 -->
+<div id="step3" class="card hidden">
+<div class="label">Signature</div>
+<canvas id="sig"></canvas>
+
+<button onclick="clearSig()" class="secondary">Clear</button>
+<button onclick="downloadPDF()">Generate Signed NDA</button>
+<button class="secondary" onclick="next(2)">Back</button>
+</div>
+
+</div>
+
+</div>
+
+<script>
+let step = 1;
+
+function show(){
+ document.querySelectorAll('.step').forEach((el,i)=>{
+   el.classList.toggle('active', i===step-1);
+ });
+}
+
+function next(n){
+ step=n;
+ for(let i=1;i<=3;i++){
+  document.getElementById('step'+i).classList.add('hidden');
+ }
+ document.getElementById('step'+n).classList.remove('hidden');
+ show();
+}
+
+const canvas=document.getElementById("sig");
+const sig=new SignaturePad(canvas);
+
+function resize(){
+ canvas.width=canvas.offsetWidth;
+ canvas.height=200;
+}
+resize();
+window.addEventListener("resize",resize);
+
+function clearSig(){sig.clear();}
+
+async function downloadPDF(){
+ if(sig.isEmpty()){
+  alert("Signature required");
+  return;
+ }
+
+ const { jsPDF } = window.jspdf;
+ const pdf = new jsPDF();
+
+ pdf.setFontSize(16);
+ pdf.text("MUSO VENTURES NDA AGREEMENT",20,20);
+
+ pdf.setFontSize(12);
+ pdf.text("All IP remains property of MUSO VENTURES LLC",20,35);
+
+ pdf.text("Name: "+document.getElementById("name").value,20,55);
+
+ const img = sig.toDataURL("image/png");
+ pdf.addImage(img,"PNG",20,70,120,50);
+
+ pdf.save("MUSO_Signed_NDA.pdf");
+}
+</script>
+
+</body>
+</html>
