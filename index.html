@@ -87,6 +87,7 @@
     margin:8px 0 34px;
   }
   .grid2{display:grid;grid-template-columns:1fr 1fr;gap:16px 22px}
+  .grid2 .field-full{grid-column:1 / -1}
   @media(max-width:640px){.grid2{grid-template-columns:1fr}}
 
   label{
@@ -95,7 +96,7 @@
     font-size:11px;letter-spacing:.13em;text-transform:uppercase;
     color:var(--gold-deep);margin-bottom:6px;
   }
-  input[type=text],input[type=email],input[type=date]{
+  input[type=text],input[type=email],input[type=date],input[type=tel]{
     width:100%;
     background:var(--field-bg);
     color:var(--field-txt);
@@ -226,14 +227,16 @@
   }
   .reveal-mute{
     margin-left:auto;
-    background:none;border:1px solid var(--gold-dim);
-    color:var(--gold);border-radius:3px;
-    width:26px;height:22px;
+    background:none;border:none;
+    color:var(--gold);
+    width:26px;height:22px;padding:0;
     display:flex;align-items:center;justify-content:center;
     cursor:pointer;flex:0 0 auto;
+    opacity:.85;
+    transition:opacity .15s ease;
   }
-  .reveal-mute:hover{border-color:var(--gold)}
-  .reveal-mute svg{width:13px;height:13px}
+  .reveal-mute:hover{opacity:1}
+  .reveal-mute svg{width:15px;height:15px}
   @keyframes pulse{0%,100%{opacity:.35}50%{opacity:1}}
   .reveal-wave{
     display:flex;align-items:flex-end;gap:2px;
@@ -332,7 +335,7 @@
 
     <div class="panel">
       <div class="grid2">
-        <div class="field">
+        <div class="field field-full">
           <label for="rp_name">Receiving Party / Collaborator (Name)</label>
           <input type="text" id="rp_name" name="Receiving Party Name" required>
         </div>
@@ -347,6 +350,10 @@
         <div class="field">
           <label for="rp_email">Collaborator Email (receives a copy)</label>
           <input type="email" id="rp_email" name="Collaborator Email" required>
+        </div>
+        <div class="field">
+          <label for="rp_phone">Collaborator Phone Number</label>
+          <input type="tel" id="rp_phone" name="Collaborator Phone" placeholder="(555) 555-5555">
         </div>
       </div>
     </div>
@@ -419,21 +426,21 @@
         <div class="sig-col">
           <h3>Disclosing Party</h3>
           <div class="field">
-            <label for="dp_signature">Signature (type full name to sign)</label>
-            <input type="text" id="dp_signature" name="Disclosing Party Signature" value="">
+            <label for="dp_signature">Signature</label>
+            <input type="text" id="dp_signature" name="Disclosing Party Signature" value="Shane Musseau" readonly>
             <div class="sig-preview" id="dp_sig_preview" aria-hidden="true">&nbsp;</div>
           </div>
           <div class="field">
-            <label for="dp_printed">Printed Name</label>
-            <input type="text" id="dp_printed" name="Disclosing Party Printed Name" value="Honeycomb Lounge">
+            <label for="dp_printed">Company Name</label>
+            <input type="text" id="dp_printed" name="Disclosing Party Printed Name" value="MUSO VENTURES" readonly>
           </div>
           <div class="field">
             <label for="dp_title">Title / Role</label>
-            <input type="text" id="dp_title" name="Disclosing Party Title">
+            <input type="text" id="dp_title" name="Disclosing Party Title" value="Founder, MUSO VENTURES" readonly>
           </div>
           <div class="field">
             <label for="dp_date">Date</label>
-            <input type="date" id="dp_date" name="Disclosing Party Date">
+            <input type="date" id="dp_date" name="Disclosing Party Date" readonly>
           </div>
         </div>
 
@@ -482,7 +489,7 @@
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14M15.54 8.46a5 5 0 0 1 0 7.07"/></svg>
           </button>
         </div>
-        <audio id="revealAudio" src="./Sweet%20Like%20Honey.mp3" preload="none" loop></audio>
+        <audio id="revealAudio" src="./Sweet%20Like%20Honey.mp3" preload="none"></audio>
         <div class="reveal-wave" aria-hidden="true">
           <span style="height:40%;animation-delay:0s"></span>
           <span style="height:70%;animation-delay:.05s"></span>
@@ -540,12 +547,17 @@
   function bindPreview(inputId, previewId){
     const inp = document.getElementById(inputId);
     const pre = document.getElementById(previewId);
+    pre.textContent = inp.value || "\u00a0";
     inp.addEventListener("input", () => {
       pre.textContent = inp.value || "\u00a0";
     });
   }
   bindPreview("dp_signature", "dp_sig_preview");
   bindPreview("rp_signature", "rp_sig_preview");
+
+  // Disclosing Party date always reflects "today" whenever this
+  // page is opened — readonly so a collaborator can't edit it.
+  document.getElementById("dp_date").value = new Date().toISOString().slice(0, 10);
 
   const status = document.getElementById("status");
   const reveal = document.getElementById("reveal");
