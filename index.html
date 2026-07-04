@@ -190,14 +190,29 @@
   }
   .reveal.show{display:block}
   .reveal.show.in{opacity:1;transform:translateY(0)}
+  .reveal-video{
+    position:absolute;inset:0;width:100%;height:100%;
+    object-fit:cover;z-index:0;
+    opacity:.4;
+    filter:saturate(1.1);
+  }
+  .reveal-video-overlay{
+    position:absolute;inset:0;z-index:1;
+    background:
+      linear-gradient(180deg, rgba(15,12,5,.55), rgba(15,12,5,.82) 65%, rgba(15,12,5,.92)),
+      var(--panel);
+    mix-blend-mode:normal;
+    opacity:.9;
+  }
   .reveal::before{
     content:"";
     position:absolute;inset:0;
+    z-index:2;
     background:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='56' height='97' viewBox='0 0 56 97'%3E%3Cg fill='none' stroke='%233A2E17' stroke-width='1'%3E%3Cpath d='M28 0L56 16.2v32.3L28 64.7 0 48.5V16.2z' transform='translate(0,-32.3)'/%3E%3Cpath d='M28 32.3L56 48.5v32.3L28 97 0 80.8V48.5z'/%3E%3Cpath d='M0 16.2L28 32.3 0 48.5z'/%3E%3C/g%3E%3C/svg%3E");
     opacity:.35;
     pointer-events:none;
   }
-  .reveal-inner{position:relative}
+  .reveal-inner{position:relative;z-index:3}
   .reveal-eyebrow{
     font-family:"Courier New",monospace;
     font-size:11px;letter-spacing:.32em;text-transform:uppercase;
@@ -458,6 +473,8 @@
     <div class="status" id="status" role="status"></div>
 
     <div class="reveal" id="reveal" aria-live="polite">
+      <video id="revealVideo" class="reveal-video" src="./Honeyed_Lounge.mp4" muted loop playsinline preload="none"></video>
+      <div class="reveal-video-overlay"></div>
       <div class="reveal-inner">
         <div class="reveal-eyebrow">
           <span class="dot"></span>Frequency confirmed &nbsp;/&nbsp; node — 01
@@ -533,6 +550,7 @@
   const status = document.getElementById("status");
   const reveal = document.getElementById("reveal");
   const revealAudio = document.getElementById("revealAudio");
+  const revealVideo = document.getElementById("revealVideo");
   const revealMute = document.getElementById("revealMute");
   const submitBtn = form.querySelector('button[type="submit"]');
 
@@ -620,6 +638,12 @@
           revealMute.innerHTML = iconMuted;
           revealMute.title = "Play signal audio";
         });
+
+        // Muted background video — plays independently of the
+        // audio-block fallback above, since muted video autoplay
+        // is allowed almost everywhere.
+        revealVideo.currentTime = 0;
+        revealVideo.play().catch(() => {});
       })
       .catch(() => {
         status.textContent = "Something went wrong sending the agreement. Please try again, or use \u201cSave a PDF copy\u201d and email it directly.";
