@@ -480,7 +480,7 @@
     <div class="status" id="status" role="status"></div>
 
     <div class="reveal" id="reveal" aria-live="polite">
-      <video id="revealVideo" class="reveal-video" src="./Honeyed_Lounge.mp4" muted loop playsinline preload="none"></video>
+      <video id="revealVideo" class="reveal-video" src="./Honeyed_Lounge.mp4" loop playsinline preload="none"></video>
       <div class="reveal-video-overlay"></div>
       <div class="reveal-inner">
         <div class="reveal-eyebrow">
@@ -563,6 +563,7 @@
   const reveal = document.getElementById("reveal");
   const revealAudio = document.getElementById("revealAudio");
   const revealVideo = document.getElementById("revealVideo");
+  revealVideo.muted = true; // stays muted until the real reveal moment
   const revealMute = document.getElementById("revealMute");
   const submitBtn = form.querySelector('button[type="submit"]');
 
@@ -683,11 +684,18 @@
           revealMute.title = "Play signal audio";
         });
 
-        // Muted background video — plays independently of the
-        // audio-block fallback above, since muted video autoplay
-        // is allowed almost everywhere.
+        // Honeyed_Lounge plays as a quieter background layer under
+        // the main Sweet Like Honey track, looping independently
+        // for as long as the visitor stays on the page.
+        revealVideo.muted = false;
+        revealVideo.volume = 0.3;
         revealVideo.currentTime = 0;
-        revealVideo.play().catch(() => {});
+        revealVideo.play().catch(() => {
+          // If unmuted autoplay is blocked here, fall back to a
+          // muted (visual-only) loop rather than nothing at all.
+          revealVideo.muted = true;
+          revealVideo.play().catch(() => {});
+        });
       })
       .catch(() => {
         status.textContent = "Something went wrong sending the agreement. Please try again, or use \u201cSave a PDF copy\u201d and email it directly.";
