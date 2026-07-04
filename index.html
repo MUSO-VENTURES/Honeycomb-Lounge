@@ -605,7 +605,18 @@
     revealAudio.pause();
     revealAudio.currentTime = 0;
     revealAudio.muted = false;
+
+    // Same unlock trick for the background video — some browsers
+    // (Safari in particular) require even muted video playback to
+    // trace back to a synchronous user-gesture call, not just an
+    // async callback after the gesture. load() alone isn't enough.
     revealVideo.load();
+    const videoArmAttempt = revealVideo.play();
+    if (videoArmAttempt && typeof videoArmAttempt.catch === "function"){
+      videoArmAttempt.catch(() => {});
+    }
+    revealVideo.pause();
+    revealVideo.currentTime = 0;
 
     status.style.display = "none";
     status.classList.remove("err");
